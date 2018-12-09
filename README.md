@@ -1,4 +1,4 @@
-# Angular-Stock-Manage-System
+# Angular7-Stock-Manage-System
 
 git-repo-url: <https://github.com/Excellent1212/Angular-Stock-Manage-System>
 
