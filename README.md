@@ -42,11 +42,11 @@ $ npm start or ng serve
 ```
 
 ### ScreenShort
-images.githubusercontent.com/39380398/49692638-b9634600-fb70-11e8-907b-7746f0c3d926.png)
-images.githubusercontent.com/39380398/49692643-cb44e900-fb70-11e8-8c2b-5d07e7a1c4df.png)
-images.githubusercontent.com/39380398/49692645-d566e780-fb70-11e8-9060-7b768152f34e.png)
-images.githubusercontent.com/39380398/49692647-dc8df580-fb70-11e8-97a0-cf8666ade05d.png)
-images.githubusercontent.com/39380398/49692648-e44d9a00-fb70-11e8-9392-df258458e94a.png)
+githubusercontent.com/39380398/49692638-b9634600-fb70-11e8-907b-7746f0c3d926.png)
+githubusercontent.com/39380398/49692643-cb44e900-fb70-11e8-8c2b-5d07e7a1c4df.png)
+githubusercontent.com/39380398/49692645-d566e780-fb70-11e8-9060-7b768152f34e.png)
+githubusercontent.com/39380398/49692647-dc8df580-fb70-11e8-97a0-cf8666ade05d.png)
+githubusercontent.com/39380398/49692648-e44d9a00-fb70-11e8-9392-df258458e94a.png)
 
 ### Screen Video
 
