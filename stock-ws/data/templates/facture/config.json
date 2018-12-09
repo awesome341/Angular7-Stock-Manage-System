@@ -1,0 +1,17 @@
+{
+    "shortid": "SkkNHKuCM",
+    "name": "facture",
+    "recipe": "chrome-pdf",
+    "engine": "handlebars",
+    "chrome": {
+        "printBackground": true
+    },
+    "modificationDate": {
+        "$$date": 1527181759297
+    },
+    "_id": "1aRcGPnFql5F65qX",
+    "$entitySet": "templates",
+    "data": {
+        "shortid": "H1GWqYdAf"
+    }
+}

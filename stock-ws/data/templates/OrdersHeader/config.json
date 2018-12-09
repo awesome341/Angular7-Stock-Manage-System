@@ -1,0 +1,16 @@
+{
+    "shortid": "SJVbqZr9f",
+    "name": "OrdersHeader",
+    "recipe": "chrome-pdf",
+    "engine": "handlebars",
+    "chrome": {
+        "marginTop": "1.5cm",
+        "marginRight": "1.5cm",
+        "marginLeft": "1.cm"
+    },
+    "modificationDate": {
+        "$$date": 1526388148724
+    },
+    "_id": "6bZUxAKSqkyvkOha",
+    "$entitySet": "templates"
+}

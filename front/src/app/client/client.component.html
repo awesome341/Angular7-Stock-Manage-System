@@ -1,0 +1,136 @@
+<div class="card" style="width: 100%;margin-top: 15px; margin-bottom: 70px;">
+    <div class="card-body">
+        <h5 class="card-title">Gestion des clients</h5>
+
+        <div class="form-group">
+            <input type="text" id="searchTextId" class="form-control" [(ngModel)]="searchText" name="searchText" placeholder="Rechercher...">
+        </div>
+        <div style="overflow-x:auto">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Adresse</th>
+                    <th scope="col">Mode de payement</th>
+                    <th scope="col">Téléphone</th>
+                    <th scope="col">Fax</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let c of (clients | searchClientByName: searchText)">
+                    <td>{{c.lastName}} {{c.firstName}}</td>
+                    <td>{{c.address}}</td>
+                    <td>{{c.paymentMode}}</td>
+                    <td>{{displayPhoneNumber(c.telephone)}}</td>
+                    <td>{{displayPhoneNumber(c.fax)}}</td>
+                    <td>{{c.email}}</td>
+                    <td>
+                        <button type="button" (click)="deleteClient(c.id)" class="btn btn-danger btn-sm">Supprimer</button>
+                        <button type="button" (click)="beforeUpdateClient(c)" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalClient"
+                            data-whatever="@fat">Modifier</button>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        <button type="button" (click)="beforeAddClient()" class="btn btn-secondary" data-toggle="modal" data-target="#modalClient"
+            data-whatever="@fat">Ajouter une client</button>
+
+        <div class="modal fade" id="modalClient" #modalClient tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" *ngIf="!newClient.id">Nouvelle client</h5>
+                        <h5 class="modal-title" *ngIf="newClient && newClient.id">Modification du client</h5>
+
+                        <button type="button" id="close_btn_modalClient" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                            <form (ngSubmit)="onSubmit()" [formGroup]="newClientForm">
+                                    <div class="col-md-6" style="float:left">
+                                    <div class="form-group">
+                                        <label for="firstName_new_client" class="col-form-label">Nom de famille du Client:</label>
+                                        <input type="text" class="form-control" formControlName="firstName_new_client" id="firstName_new_client" [(ngModel)]="newClient.firstName">
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('firstName_new_client').touched && newClientForm.get('firstName_new_client').hasError('required')">
+                                            Le nom est obligatoire
+                                        </div>
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('firstName_new_client').touched && newClientForm.get('firstName_new_client').hasError('maxlength')">
+                                            Le nom ne dépasse pas 256 charactères
+                                        </div>
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('firstName_new_client').hasError('uniq')
+                                                                                            && newClientForm.get('lastName_new_client').hasError('uniq')">
+                                            un client avec ce nom existe déja
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastName_new_client" class="col-form-label">Prénom du client:</label>
+                                        <input class="form-control" formControlName="lastName_new_client" id="lastName_new_client" [(ngModel)]="newClient.lastName">
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('lastName_new_client').touched && newClientForm.get('lastName_new_client').hasError('required')">
+                                                Le prénom est obligatoire
+                                            </div>
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('lastName_new_client').touched && newClientForm.get('lastName_new_client').hasError('maxlength')">
+                                            Le prénom du client ne dépasse pas 1000 charactères
+                                        </div>
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('lastName_new_client').hasError('uniq')
+                                                                                            && newClientForm.get('firstName_new_client').hasError('uniq')">
+                                            un client avec ce prénom existe déja
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="address_new_client" class="col-form-label">Adresse</label>
+                                        <input class="form-control" formControlName="address_new_client" id="address_new_client" [(ngModel)]="newClient.address">
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('address_new_client').touched && newClientForm.get('address_new_client').hasError('maxlength')">
+                                                L'adresse ne dépasse pas 256 charactères
+                                            </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <label for="paymentMode_new_client" class="col-form-label">Mode de payment</label>
+                                            <select class="custom-select" formControlName="paymentMode_new_client"  id="paymentMode_new_client_select" [(ngModel)]="newClient.paymentMode">
+                                                <option selected>Choisir...</option>
+                                                <option [value]="p.id" *ngFor="let p of paymentModes">{{p.ref}}</option>
+                                              </select>
+                                        </div>
+                                </div>
+                                <div class="col-md-6" style="float:right">
+                                    <div class="form-group">
+                                        <label for="telephone_new_client" class="col-form-label">Téléphone:</label>
+                                        <input class="form-control" pattern="[0-9]{8}" formControlName="telephone_new_client" id="telephone_new_client" [(ngModel)]="newClient.telephone">
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('telephone_new_client').touched && newClientForm.get('telephone_new_client').hasError('pattern')">
+                                            le numéro doit comporter 8 chiffres
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fax_new_client" class="col-form-label">Fax:</label>
+                                        <input class="form-control" pattern="[0-9]{8}" formControlName="fax_new_client" id="fax_new_client" [(ngModel)]="newClient.fax">
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('fax_new_client').touched && newClientForm.get('fax_new_client').hasError('pattern')">
+                                            le numéro doit comporter 8 chiffres
+                                        </div>
+                                    </div>
+        
+                                    <div class="form-group">
+                                        <label for="email_new_client" class="col-form-label">Email:</label>
+                                        <input type="email" name="email" [email]="newClient.email!=='' && newClient.email!==null && newClient.email!==undefined" email="true" email class="form-control" formControlName="email_new_client" id="email_new_client" [(ngModel)]="newClient.email">
+                                        <div class="alert alert-danger" role="alert" *ngIf="newClientForm.get('email_new_client').touched && newClientForm.get('email_new_client').hasError('email') && newClient.email">
+                                            l'adresse n'est pas valide
+                                        </div>
+                                    </div>
+                                    </div>
+        
+                                </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button type="submit" (click)="onSubmit()" [disabled]="newClientForm.invalid 
+                        && (!(newClientForm.get('firstName_new_client').hasError('uniq') === ! newClientForm.get('lastName_new_client').hasError('uniq'))
+                        && (!newClientForm.get('firstName_new_client').hasError('uniq') && ! newClientForm.get('lastName_new_client').hasError('uniq')))" class="btn btn-primary">Sauvegarder</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

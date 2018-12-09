@@ -1,0 +1,68 @@
+<div class="card" style="width: 100%;margin-top: 15px; margin-bottom: 70px;">
+    <div class="card-body">
+        <h5 class="card-title">Gestion des marques</h5>
+
+        <div class="form-group">
+            <input type="text" id="searchTextId" class="form-control" [(ngModel)]="searchText" name="searchText" placeholder="Rechercher...">
+        </div>
+        <div style="overflow-x:auto">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Nom marque</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let m of (marqs | searchMarqByName: searchText)">
+                        <td>{{m.label}}</td>
+                        <td>
+                            <button type="button" (click)="deleteMarq(m.id)" class="btn btn-danger btn-sm">Supprimer</button>
+                            <button type="button" (click)="beforeUpdateMarq(m)" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalMarque"
+                                data-whatever="@fat">Modifier</button>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button type="button" (click)="beforeAddMarq()" class="btn btn-secondary" data-toggle="modal" data-target="#modalMarque"
+            data-whatever="@fat">Ajouter une marque</button>
+
+        <div class="modal fade" id="modalMarque" #modalMarque tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" *ngIf="!newMarq.id">Nouvelle marque</h5>
+                        <h5 class="modal-title" *ngIf="newMarq && newMarq.id">Modification de la marque</h5>
+
+                        <button type="button" id="close_btn_modalMarque" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form (ngSubmit)="onSubmit()" [formGroup]="newMarqForm">
+                            <div class="form-group">
+                                <label for="name_new_marq" class="col-form-label">Nom Marque:</label>
+                                <input type="text" class="form-control" formControlName="label_new_marq" id="label_new_marq" [(ngModel)]="newMarq.label">
+                                <div class="alert alert-danger" role="alert" *ngIf="newMarqForm.get('label_new_marq').touched && newMarqForm.get('label_new_marq').hasError('required')">
+                                    Le nom est obligatoire
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newMarqForm.get('label_new_marq').touched && newMarqForm.get('label_new_marq').hasError('maxlength')">
+                                    Le nom ne dépasse pas 256 charactères
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newMarqForm.get('label_new_marq').touched && newMarqForm.get('label_new_marq').hasError('uniq')">
+                                    Cette marque existe déja
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button type="submit" (click)="onSubmit()" [disabled]="newMarqForm.invalid" class="btn btn-primary">Sauvegarder</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

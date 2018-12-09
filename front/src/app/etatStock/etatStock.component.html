@@ -1,0 +1,102 @@
+<div class="card" style="width: 100%;margin-top: 15px; margin-bottom: 70px;">
+    <div class="card-body">
+        <h5 class="card-title">Suivie de l'état du stock</h5>
+
+        <div class="form-group">
+            <input type="text" id="searchTextId" class="form-control" [(ngModel)]="searchText" name="searchText" placeholder="Rechercher...">
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Nom Produit</th>
+                    <th scope="col">Qte</th>
+                    <th scope="col">Actions</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of (products | searchProductByName: searchText)">
+                    <td>{{p.ref}}</td>
+                    <td>{{p.qte}}</td>
+                    <td>
+                        <button type="button" (click)="beforeAddProductStock(p)" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#modalEntreeStock" data-whatever="@fat">Ajout quatité stock</button>
+
+                        <div class="modal fade" id="modalEntreeStock" #modalEntreeStock tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" *ngIf="!newEntreeStock.id">Ajouter à la quantité du stock</h5>
+                                        <h5 class="modal-title" *ngIf="newEntreeStock && newEntreeStock.id">Modifier dernier ajout dans le stock</h5>
+                
+                                        <button type="button" id="close_btn_modalEntreeStock" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form (ngSubmit)="onSubmit()" [formGroup]="newEntreeStockForm">
+                                            <div class="form-group">
+                                                <label for="qte_new_entreeStock" class="col-form-label">Quantite à ajouter:</label>
+                                                <input type="text" pattern="[0-9]*" class="form-control" formControlName="qte_new_entreeStock" id="qte_new_entreeStock" [(ngModel)]="newEntreeStock.qte">
+                                                <div class="alert alert-danger" role="alert" *ngIf="newEntreeStockForm.get('qte_new_entreeStock').touched && newEntreeStockForm.get('qte_new_entreeStock').hasError('required')">
+                                                    Le quantite à ajouter est obligatoire
+                                                </div>
+                                                <div class="alert alert-danger" role="alert" *ngIf="newEntreeStockForm.get('qte_new_entreeStock').touched && newEntreeStockForm.get('qte_new_entreeStock').hasError('pattern')">
+                                                    Le quantite doit être un nombre
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fournisseurId_new_entreeStock" class="col-form-label">Fournisseur:</label>
+                                                <div class="input-group form-control">
+                                                    <select class="custom-select" formControlName="fournisseurId_new_entreeStock"  id="fournisseurId_new_entreeStock" [(ngModel)]="newEntreeStock.fournisseurId">
+                                                      <option selected>Choisir...</option>
+                                                      <option [value]="f.id" *ngFor="let f of fournisseurs">{{f.firstName}} {{f.lastName}}</option>
+                                                    </select>
+                                                    <div class="input-group-append">
+                                                      <button class="btn btn-outline-secondary" type="button">Ajouter fournisseur</button>
+                                                    </div>
+                                                  </div>
+                                                <div class="alert alert-danger" role="alert" *ngIf="newEntreeStockForm.get('fournisseurId_new_entreeStock').touched && newEntreeStockForm.get('fournisseurId_new_entreeStock').hasError('required')">
+                                                    Le founisseur est obligatoire
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="unitFournisPrice_new_entreeStock" class="col-form-label">Prix unitaire du fournisseur:</label>
+                                                <input type="text" pattern="[0-9]*" class="form-control" formControlName="unitFournisPrice_new_entreeStock" id="unitFournisPrice_new_entreeStock" [(ngModel)]="newEntreeStock.unitFournisPrice">
+                                                <div class="alert alert-danger" role="alert" *ngIf="newEntreeStockForm.get('unitFournisPrice_new_entreeStock').touched && newEntreeStockForm.get('unitFournisPrice_new_entreeStock').hasError('required')">
+                                                    Le prix du fournisseur est obligatoire
+                                                </div>
+                                                <div class="alert alert-danger" role="alert" *ngIf="newEntreeStockForm.get('unitFournisPrice_new_entreeStock').touched && newEntreeStockForm.get('unitFournisPrice_new_entreeStock').hasError('maxlength')">
+                                                    Le prix du fournisseur doit être un nombre
+                                                </div>
+                                                <div class="alert alert-danger" role="alert" *ngIf="newEntreeStockForm.get('unitFournisPrice_new_entreeStock').touched && newEntreeStockForm.get('unitFournisPrice_new_entreeStock').hasError('pattern')">
+                                                    Le quantite doit être un nombre
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="gainMarge_new_entreeStock" class="col-form-label">Marge de gain en %:</label>
+                                                <input type="text" pattern="[0-9]{2}" class="form-control" formControlName="gainMarge_new_entreeStock" id="gainMarge_new_entreeStock" [(ngModel)]="newEntreeStock.gainMarge">
+                                                <div class="alert alert-danger" role="alert" *ngIf="newEntreeStockForm.get('gainMarge_new_entreeStock').touched && newEntreeStockForm.get('gainMarge_new_entreeStock').hasError('required')">
+                                                    La marge du gain est obligatoire
+                                                </div>
+                                                <div class="alert alert-danger" role="alert" *ngIf="newEntreeStockForm.get('gainMarge_new_entreeStock').touched && newEntreeStockForm.get('gainMarge_new_entreeStock').hasError('maxlength')">
+                                                    Le marge du gain doit contenir nombre
+                                                </div>
+                                            </div>
+                                            
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                        <button type="submit" (click)="onSubmit()" [disabled]="newEntreeStockForm.invalid" class="btn btn-primary">Sauvegarder</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

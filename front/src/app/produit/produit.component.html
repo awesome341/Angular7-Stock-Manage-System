@@ -1,0 +1,100 @@
+<div class="card" style="width: 100%;margin-top: 15px">
+    <div class="card-body">
+        <h5 class="card-title">Gestion des produits</h5>
+
+        <div class="form-group">
+            <input type="text" id="searchTextId" class="form-control" [(ngModel)]="searchText" name="searchText" placeholder="Rechercher...">
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Nom Produit</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">% TVA</th>
+                    <th scope="col">Prix vente unit HT</th>
+                    <th scope="col">Actions</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of (products | searchProductByName: searchText)">
+                    <td>{{p.ref}}</td>
+                    <td>{{p.description}}</td>
+                    <td>{{p.tva}}</td>
+                    <td>{{p.unitSellPriceHt}}</td>
+                    <td>
+                        <button type="button" [disabled]="p.qte !==0" data-toggle="tooltip" data-placement="top" title="impossible de supprimer le produit lorsque la qte est différente de 0" (click)="deleteProduct(p.id)" class="btn btn-danger btn-sm">Supprimer <span class="badge badge-light">{{p.qte}}</span></button>
+                        <button type="button" (click)="beforeUpdateProduct(p)" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalProduit" data-whatever="@fat">Modifier</button>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" (click)="beforeAddProduct()" class="btn btn-secondary" data-toggle="modal" data-target="#modalProduit" data-whatever="@fat">Ajouter un produit</button>
+
+        <div class="modal fade" id="modalProduit" #modalProduit tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" *ngIf="!newProduct.id">Nouveau produit</h5>
+                        <h5 class="modal-title" *ngIf="newProduct && newProduct.id">Modification du produit</h5>
+
+                        <button type="button" id="close_btn_modalProduit" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form (ngSubmit)="onSubmit()" [formGroup]="newProductForm">
+                            <div class="form-group">
+                                <label for="ref_new_product" class="col-form-label">Nom Produit:</label>
+                                <input type="text" class="form-control" formControlName="ref_new_product" id="ref-new-product" [(ngModel)]="newProduct.ref">
+                                <div class="alert alert-danger" role="alert" *ngIf="newProductForm.get('ref_new_product').touched && newProductForm.get('ref_new_product').hasError('required')">
+                                    Le nom est obligatoire
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newProductForm.get('ref_new_product').touched && newProductForm.get('ref_new_product').hasError('maxlength')">
+                                    Le nom ne dépasse pas 256 charactères
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newProductForm.get('ref_new_product').touched && newProductForm.get('ref_new_product').hasError('uniq')">
+                                    Ce produit existe déja
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description_new_product" class="col-form-label">Description:</label>
+                                <textarea class="form-control" formControlName="description_new_product" id="description_new_product" [(ngModel)]="newProduct.description"></textarea>
+                                <div class="alert alert-danger" role="alert" *ngIf="newProductForm.get('description_new_product').touched && newProductForm.get('description_new_product').hasError('maxlength')">
+                                    La description ne dépasse pas 1000 charactères
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="tva_new_product" class="col-form-label">% TVA</label>
+                                <input pattern="[0-9]{8}" class="form-control" pattern="[0-9]{0,2}" formControlName="tva_new_product" id="tva_new_product" [(ngModel)]="newProduct.tva">
+                                <div class="alert alert-danger" role="alert" *ngIf="newProductForm.get('tva_new_product').touched && newProductForm.get('tva_new_product').hasError('required')">
+                                    La tva est obligatoire
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newProductForm.get('tva_new_product').touched && newProductForm.get('tva_new_product').hasError('pattern')">
+                                    La tva doit être formé de 2 chiffres
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="unitSellPriceHt_new_product" class="col-form-label">Prix vente unit HT:</label>
+                                <input class="form-control"  pattern="[0-9]*" formControlName="unitSellPriceHt_new_product" id="unitSellPriceHt_new_product" [(ngModel)]="newProduct.unitSellPriceHt">
+                                <div class="alert alert-danger" role="alert" *ngIf="newProductForm.get('unitSellPriceHt_new_product').touched && newProductForm.get('unitSellPriceHt_new_product').hasError('required')">
+                                    Le prix de vente unitaire HT est obligatoire
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newProductForm.get('unitSellPriceHt_new_product').touched && newProductForm.get('unitSellPriceHt_new_product').hasError('pattern')">
+                                    Le prix ne doit contenir que des chiffres
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button type="submit" (click)="onSubmit()" [disabled]="newProductForm.invalid" class="btn btn-primary">Sauvegarder</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

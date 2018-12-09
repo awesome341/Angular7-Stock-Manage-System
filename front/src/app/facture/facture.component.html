@@ -1,0 +1,193 @@
+<div class="card card-fit" style="width: 100%;margin-top: 15px">
+    <div class="card-body">
+        <h5 class="card-title">Gestion des factures</h5>
+
+        <div class="form-group">
+            <input type="text" id="searchTextId" class="form-control" [(ngModel)]="searchText" name="searchText" placeholder="Rechercher...">
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Date Création</th>
+                    <th scope="col">Prix total HT</th>
+                    <th scope="col">Prix total TTC</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Actions</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of (factures | searchFactureByName: searchText)">
+                    <td>{{p.creationDate}}</td>
+                    <td>{{p.totalPriceHt}}</td>
+                    <td>{{p.totalPriceTtc}}</td>
+                    <td>{{p.clientName}}</td>
+                    <td>
+                        <button type="button" data-toggle="tooltip" data-placement="top" title="impossible de supprimer le facture lorsque la qte est différente de 0"
+                            (click)="deleteFacture(p.id)" class="btn btn-danger btn-sm">Supprimer
+                            <span class="badge badge-light">{{p.qte}}</span>
+                        </button>
+                        <button type="button" (click)="beforeUpdateFacture(p)" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalFacture"
+                            data-whatever="@fat">Modifier</button>
+                            <button type="button" (click)="generateFacture(p)" class="btn btn-secondary btn-sm"
+                            data-whatever="@fat">Imprimer</button>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" (click)="beforeAddFacture()" class="btn btn-secondary" data-toggle="modal" data-target="#modalFacture"
+            data-whatever="@fat">Ajouter une facture</button>
+
+        <div class="modal fade" id="modalFacture" #modalFacture tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" *ngIf="!newFacture.id">Nouvelle facture</h5>
+                        <h5 class="modal-title" *ngIf="newFacture && newFacture.id">Modification de la facture</h5>
+
+                        <button type="button" id="close_btn_modalFacture" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form [formGroup]="newFactureForm">
+
+                            <div class="col-md-6" style="float:left">
+
+                                <div class="card" style="padding: 10px;margin: 0px; background-color: #8080800d;">
+                                    <div class="row" style="margin-bottom: -20px;">
+                                        <div class="form-group col-md-8" style="float:left">
+                                            <label for="productId_new_purchase" class="col-form-label">Produit:</label>
+                                            <div class="form-group">
+                                                <select class="custom-select" formControlName="productId_new_purchase" id="productId_new_purchase" [(ngModel)]="newPurchase.productId" (change)="onProductChange($event.target.value)">
+                                                    <option selected>Choisir...</option>
+                                                    <option [value]="p.id" *ngFor="let p of products">{{p.ref}}</option>
+                                                </select>
+
+                                            </div>
+                                            <div class="alert alert-danger" role="alert" *ngIf="newFactureForm.get('productId_new_purchase').touched && newFactureForm.get('productId_new_purchase').hasError('required')">
+                                                Le produit est obligatoire
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4" style="float:right">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Prix HT: </label>
+                                                <span class="row" style="padding-left: 20%; font-weight: bolder;font-size: x-large;">{{newPurchase.productId?getProductPriceHt(newPurchase.productId):null}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-bottom: -20px;">
+                                        <div class="col-md-3" style="float:left">
+                                            <div class="form-group">
+                                                <label for="qte_new_purchase" class="col-form-label">Qte:</label>
+                                                <input class="form-control" formControlName="qte_new_purchase" id="qte_new_purchase" [(ngModel)]="newPurchase.qte">
+                                                <div class="alert alert-danger" role="alert" *ngIf="newFactureForm.get('qte_new_purchase').touched && newFactureForm.get('qte_new_purchase').hasError('required')">
+                                                    La qte est obligatoire
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3" style="float:left">
+                                            <div class="form-group">
+                                                <label for="tva_new_purchase" class="col-form-label">% TVA:</label>
+                                                <input class="form-control" formControlName="tva_new_purchase" id="tva_new_purchase" [(ngModel)]="newPurchase.tva">
+                                                <div class="alert alert-danger" role="alert" *ngIf="newFactureForm.get('tva_new_purchase').touched && newFactureForm.get('tva_new_purchase').hasError('required')">
+                                                    La TVA est obligatoire
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3" style="float:right">
+                                            <div class="form-group">
+                                                <label for="remise_new_purchase" class="col-form-label">Remise:</label>
+                                                <input class="form-control" formControlName="remise_new_purchase" id="remise_new_purchase" [(ngModel)]="newPurchase.remise">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3" style="float:right">
+                                            <button [disabled]="newFactureForm.get('qte_new_purchase').invalid
+                                                            ||   newFactureForm.get('productId_new_purchase').invalid
+                                                            ||   newFactureForm.get('tva_new_purchase').invalid
+                                                            ||   newFactureForm.get('remise_new_purchase').invalid" (click)="addPurchase()"
+                                                class="btn btn-success col-md-12" style="margin-top:37px"> Ajouter >> </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="form-group">
+                                        <label for="clientId_new_facture" class="col-form-label">Client:</label>
+                                        <div class="input-group form-control">
+                                            <select class="custom-select" formControlName="clientId_new_facture" id="clientId_new_facture" [(ngModel)]="newFacture.clientId">
+                                                <option selected>Choisir...</option>
+                                                <option [value]="c.id" *ngFor="let c of clients">{{c.firstName}} {{c.lastName}}</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button">Ajouter client</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card" style="padding: 10px; margin: 10px 0px; background-color: #8080800d;">
+                                    <div class="row">
+                                        <div class="form-group col-md-3" style="float:left;max-height: 40px;">
+                                            <div class="form-group">
+                                                <label class="col-form-label" style="text-align:center">Prix total HT: </label>
+                                                <span class="row" style="padding: 0% 30%; font-weight: bolder;font-size: x-large;">{{newFacture.totalPriceHt}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3" style="float:left">
+                                            <div class="form-group">
+                                                <label class="col-form-label" style="text-align:center">Prix total TTC: </label>
+                                                <span class="row" style="padding: 0% 30%; font-weight: bolder;font-size: x-large;">{{newFacture.totalPriceTtc}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-6" style="float:right;max-height: 40px;">
+                                            <div class="form-group">
+                                                <label class="col-form-label" style="text-align:center; width: 100%">Prix total avec Remise: </label>
+                                                <span class="row" style="padding:0% 40%; font-weight: bolder;font-size: x-large;">{{newFacture.finalTotalPriceAvecRemise}}</span>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-6 card" id="facture-achats" style="float:right;overflow-y: auto; padding: 10px; height:399px; margin: 0px; background-color: #8080800d;">
+                                <div *ngFor="let purchase of newPurchases" class="card card-fit">
+                                    <div class="card-body" style="padding: 0.3rem 0.3rem 0.3rem 0.3rem !important;height: inherit !important;">
+                                        <div class="row">
+                                            <h6 class="card-title col-md-9" style="float:left">
+                                                <span style="color:#2450a0">Produit:</span> {{purchase.productName}}</h6>
+                                            <h6 class="card-title col-md-3 text-center" style="float:right">
+                                                <!-- <span style="color: #e80b0b; cursor: pointer" (click)="deletePurchase(purchase)">
+                                                    <u>Supprimer</u>
+                                                </span> -->
+                                                <i class="fa fa-trash red clickable"  (click)="deletePurchase(purchase)" ></i>
+                                            </h6>
+                                        </div>
+                                        <div class="row">
+                                            <h6 style="font-size: large" class="card-title col-md-3" style="float:right">
+                                                <span style="color:#2450a0">Prix HT:</span> {{purchase.sellPriceHt}}</h6>
+                                            <h6 style="font-size: large" class="card-title col-md-3" style="float:left">
+                                                <span style="color:#2450a0">Qte:</span> {{purchase.qte}}</h6>
+                                            <h6 style="font-size: large" class="card-title col-md-3" style="float:left">
+                                                <span style="color:#2450a0">% TVA:</span> {{purchase.tva}}</h6>
+                                            <h6 style="font-size: large" class="card-title col-md-3" style="float:right">
+                                                <span style="color:#2450a0">Remise:</span> {{purchase.remise}}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button type="submit" (click)="saveFacture()" [disabled]="newPurchases.length === 0" class="btn btn-primary">Sauvegarder</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

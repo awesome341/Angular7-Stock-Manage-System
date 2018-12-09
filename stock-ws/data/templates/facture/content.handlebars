@@ -1,0 +1,147 @@
+<!-- 
+Invoice dynamically rendered into html using handlebars and converted into pdf
+using chrome-pdf recipe. The styles are extracted into separate asset for 
+better readability and later reuse.
+
+Data to this sample are mocked at the design time and should be filled on the 
+incoming API request.
+!-->
+
+<html>
+    <head>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <style>
+            {#asset facture.css @encoding=utf8}
+        </style>        
+    </head>
+    <body>
+        <div class="invoice-box">
+            <table cellpadding="0" cellspacing="0">
+                <tr class="top">
+                    <td colspan="6">
+                        <table>
+                            <tr>
+                                <td class="title">
+                                    <img src="{#asset Invoice logo.png @encoding=dataURI}" style="width:100%; max-width:300px;" />
+                                </td>
+                                <td>
+                                 <b>Réf Facture: </b>{{ref}}  <br>
+                                   <b> Date Création: </b>{{creationDate}}
+
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="information ">
+                    <td colspan="6 ">
+                        <table>
+                            <tr>
+                                <td>
+                                      {{society.name}}<br>
+                                    {{society.address}}<br>
+                                     <b>Matric fis: </b>{{society.matriculeFiscale}}<br>
+                                    <b>RIB: </b>{{society.rib}}<br>
+                                    <b>Tél: </b>{{society.telephone}}<br>
+                                    <b>Fax: </b>{{society.fax}}<br>
+                                    <b>Mail: </b>{{society.email}}
+                                    
+                                </td>
+                                <td>
+                                    {{client.name}}<br>
+                                    {{client.address}}<br>
+                                    <b>Tél: </b>{{client.telephone}}<br>
+                                    <b>Fax: </b>{{client.fax}}<br>
+                                    <b>Mail: </b>{{client.email}}
+
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                       <tr>
+                    <td colspan="1 "></td>
+                     <td colspan="4 "  style="text-align:center;
+                     padding-bottom: 30px;padding-top: 0px; font-size: 30px;">
+                      <b>FACTURE</b> 
+                    </td>
+                    <td colspan="1 "></td>
+                </tr>
+                <tr class="heading ">
+
+                    <td>
+                        Produit
+                    </td>
+                    <td>
+                        Qte
+                    </td>
+                     <td>
+                        Prix HT
+                    </td>
+                    <td>
+                        TVA
+                    </td>
+                     <td>
+                        Remise
+                    </td>
+                    <td>
+                        Prix Total TTC
+                    </td>
+                </tr>
+                {{#each products}}
+                <tr class="item">
+                    <td>
+                        {{productName}}
+                    </td>
+                    <td>
+                       {{qte}}
+                    </td>
+                     <td>
+                       {{tva}}
+                    </td>
+                      <td>
+                       {{remise}}
+                    </td>
+                     <td>
+                       {{sellPriceHt}}
+                    </td>
+                     <td>
+                       {{sellPriceTtc}}
+                    </td>
+                </tr>
+                {{/each}}
+                <tr class="heading ">
+                    <td></td>
+                     <td></td>
+                    <td></td>
+                     <td></td>
+                        <td style="text-align:center">
+                         <b>Total: {{totalSellPriceTtc}}</b>
+                    </td>
+                     <td style="text-align:center">
+                         <b>Total: {{totalSellPriceHt}}</b>
+                    </td>
+                </tr>
+                 <tr class="top">
+                    <td colspan="6">
+                        <table>
+                            <tr><td class="title"></td></tr>
+                            <tr>
+                                <td class="title">
+                                </td>
+                                <td>
+                                 Signature
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+
+
+

@@ -1,0 +1,38 @@
+{
+    "ref": "12566",
+    "creationDate": "12/25/2018",
+    "society": {
+        "name": "Societe techno informatique",
+        "address": "Rue Habib Bourguiba Tunis 55",
+         "telephone": "55584920",
+        "fax": "55584920",
+        "matriculeFiscale": "matriculefis",
+        "rib": "rib3265692632646",
+        "email": "info.techni@com"
+    },
+     "client": {
+        "name": "Societe techno informatique",
+        "address": "Rue Habib Bourguiba Tunis 55",
+        "telephone": "55584920",
+        "fax": "55584920",
+        "email": "info.techni@com"
+    },
+    "products": [{
+        "productName": "Produit 1",
+        "qte": 2,
+        "sellPriceHt": 20.2,
+        "sellPriceTtc": 22,
+        "tva": 2,
+        "remise": 2
+    },{
+        "productName": "Produit 2",
+        "qte": 21,
+        "sellPriceHt": 110.2,
+        "sellPriceTtc": 22,
+        "tva": 2,
+        "remise": 2
+    }],
+    
+      "totalSellPriceHt": 200.2,
+      "totalSellPriceTtc": 2222
+}

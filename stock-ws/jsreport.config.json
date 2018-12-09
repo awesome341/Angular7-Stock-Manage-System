@@ -1,0 +1,42 @@
+{
+  "extensions": {
+    "authentication": {
+      "cookieSession": {
+        "secret": "<your strong secret here>"
+      },
+      "admin": {
+        "username": "admin",
+        "password": "password"
+      },
+      "enabled": false
+    },
+    "scripts": {
+      "timeout": 40000,
+      "strategy": "http-server"
+    },
+    "sample-template": {
+      "createSamples": true
+    }
+  },
+  "httpPort": 5488,
+  "store": {
+    "provider": "fs"
+  },
+  "blobStorage": {
+    "provider": "fs"
+  },
+  "logger": {
+    "console": {
+      "transport": "console",
+      "level": "debug"
+    }
+  },
+  "allowLocalFilesAccess": true,
+  "templatingEngines": {
+    "timeout": 10000,
+    "strategy": "http-server"
+  },
+  "chrome": {
+    "timeout": 40000
+  }
+}

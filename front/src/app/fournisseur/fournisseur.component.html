@@ -1,0 +1,139 @@
+<div class="card" style="width: 100%;margin-top: 15px; margin-bottom: 70px;">
+    <div class="card-body">
+        <h5 class="card-title">Gestion des fournisseurs</h5>
+
+        <div class="form-group">
+            <input type="text" id="searchTextId" class="form-control" [(ngModel)]="searchText" name="searchText" placeholder="Rechercher...">
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Adresse</th>
+                    <th scope="col">Téléphone</th>
+                    <th scope="col">Fax</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let f of (fournisseurs | searchFournisseurByName: searchText)">
+                    <td>{{f.lastName}} {{f.firstName}}</td>
+                    <td>{{f.address}}</td>
+                    <td>{{displayPhoneNumber(f.telephone)}}</td>
+                    <td>{{displayPhoneNumber(f.fax)}}</td>
+                    <td>{{f.email}}</td>
+                    <td>
+                        <button type="button" [disabled]="hasProducts(f.id)" data-toggle="tooltip" data-placement="top" title="impossible de supprimer le fournisseur lorsqu'il y a des produits correspondants a ce fournisseur"
+                            (click)="deleteFournisseur(f.id)" class="btn btn-danger btn-sm">Supprimer
+                        </button>
+                        <button type="button" (click)="beforeUpdateFournisseur(f)" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalFournisseur"
+                            data-whatever="@fat">Modifier</button>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" (click)="beforeAddFournisseur()" class="btn btn-secondary" data-toggle="modal" data-target="#modalFournisseur"
+            data-whatever="@fat">Ajouter un fournisseur</button>
+
+        <div class="modal fade" id="modalFournisseur" #modalFournisseur tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" *ngIf="!newFournisseur.id">Nouveau fournisseur</h5>
+                        <h5 class="modal-title" *ngIf="newFournisseur && newFournisseur.id">Modification du fournisseur</h5>
+
+                        <button type="button" id="close_btn_modalFournisseur" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form (ngSubmit)="onSubmit()" [formGroup]="newFournisseurForm">
+                            <div class="col-md-6" style="float:left">
+                            <div class="form-group">
+                                <label for="firstName_new_fournisseur" class="col-form-label">Nom de famille du Fournisseur:</label>
+                                <input type="text" class="form-control" formControlName="firstName_new_fournisseur" id="firstName_new_fournisseur" [(ngModel)]="newFournisseur.firstName">
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('firstName_new_fournisseur').touched && newFournisseurForm.get('firstName_new_fournisseur').hasError('required')">
+                                    Le nom est obligatoire
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('firstName_new_fournisseur').touched && newFournisseurForm.get('firstName_new_fournisseur').hasError('maxlength')">
+                                    Le nom ne dépasse pas 256 charactères
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('firstName_new_fournisseur').hasError('uniq')
+                                                                                    && newFournisseurForm.get('lastName_new_fournisseur').hasError('uniq')">
+                                    un fournisseur avec ce nom existe déja
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName_new_fournisseur" class="col-form-label">Prénom du fournisseur:</label>
+                                <input class="form-control" formControlName="lastName_new_fournisseur" id="lastName_new_fournisseur" [(ngModel)]="newFournisseur.lastName">
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('lastName_new_fournisseur').touched && newFournisseurForm.get('lastName_new_fournisseur').hasError('required')">
+                                        Le prénom est obligatoire
+                                    </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('lastName_new_fournisseur').touched && newFournisseurForm.get('lastName_new_fournisseur').hasError('maxlength')">
+                                    Le prénom du fournisseur ne dépasse pas 1000 charactères
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('lastName_new_fournisseur').hasError('uniq')
+                                                                                    && newFournisseurForm.get('firstName_new_fournisseur').hasError('uniq')">
+                                    un fournisseur avec ce prénom existe déja
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="address_new_fournisseur" class="col-form-label">Adresse</label>
+                                <input class="form-control" formControlName="address_new_fournisseur" id="address_new_fournisseur" [(ngModel)]="newFournisseur.address">
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('address_new_fournisseur').touched && newFournisseurForm.get('address_new_fournisseur').hasError('required')">
+                                    L'adresse est obligatoire
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('address_new_fournisseur').touched && newFournisseurForm.get('address_new_fournisseur').hasError('maxlength')">
+                                        L'adresse ne dépasse pas 256 charactères
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" style="float:right">
+                            <div class="form-group">
+                                <label for="telephone_new_fournisseur" class="col-form-label">Téléphone:</label>
+                                <input class="form-control" pattern="[0-9]{8}" formControlName="telephone_new_fournisseur" id="telephone_new_fournisseur" [(ngModel)]="newFournisseur.telephone">
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('telephone_new_fournisseur').touched && newFournisseurForm.get('telephone_new_fournisseur').hasError('uniq')">
+                                    un fournisseur avec ce numéro existe déja
+                                </div>
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('telephone_new_fournisseur').touched && newFournisseurForm.get('telephone_new_fournisseur').hasError('pattern')">
+                                    le numéro doit comporter 8 chiffres
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="fax_new_fournisseur" class="col-form-label">Fax:</label>
+                                <input class="form-control" pattern="[0-9]{8}" formControlName="fax_new_fournisseur" id="fax_new_fournisseur" [(ngModel)]="newFournisseur.fax">
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('fax_new_fournisseur').touched && newFournisseurForm.get('fax_new_fournisseur').hasError('pattern')">
+                                    le numéro doit comporter 8 chiffres
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email_new_fournisseur" class="col-form-label">Email:</label>
+                                <input type="email" name="email" [email]="newFournisseur.email!=='' && newFournisseur.email!==null && newFournisseur.email!==undefined" email="true" email class="form-control" formControlName="email_new_fournisseur" id="email_new_fournisseur" [(ngModel)]="newFournisseur.email">
+                                <div class="alert alert-danger" role="alert" *ngIf="newFournisseurForm.get('email_new_fournisseur').touched && newFournisseurForm.get('email_new_fournisseur').hasError('email') && newFournisseur.email">
+                                    l'adresse n'est pas valide
+                                </div>
+                            </div>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button type="submit" (click)="onSubmit()" [disabled]="newFournisseurForm.invalid 
+                        && (!(newFournisseurForm.get('firstName_new_fournisseur').hasError('uniq') === ! newFournisseurForm.get('lastName_new_fournisseur').hasError('uniq'))
+                        && (!newFournisseurForm.get('firstName_new_fournisseur').hasError('uniq') && ! newFournisseurForm.get('lastName_new_fournisseur').hasError('uniq')))" class="btn btn-primary">Sauvegarder</button>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
