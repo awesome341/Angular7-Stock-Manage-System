@@ -50,7 +50,6 @@ $ npm start or ng serve
 
 ### Screen Video
 
-https://www.useloom.com/share/97a75dc5daf44b95ae50efa3ba9714ae
 
 
 
